@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import TypeVar, override
 
 from pydantic import BaseModel
 
@@ -28,7 +28,13 @@ class DiscoveryScraper(CollectScraper[Q, R]):
             polling=polling,
             timeout=timeout,
         )
-        self._params["type"] = "discover_new"
-        self._params["discover_by"] = self.discover_by
-        if discovery_only:
-            self._params["discovery_only"] = "true"
+        self._discovery_only = discovery_only
+
+    @override
+    def _build_params(self) -> dict[str, str]:
+        params = super()._build_params()
+        params["type"] = "discover_new"
+        params["discover_by"] = self.discover_by
+        if self._discovery_only:
+            params["discovery_only"] = "true"
+        return params
