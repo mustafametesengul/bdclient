@@ -24,34 +24,23 @@ class CollectScraper(Generic[Q, R]):
         polling: Polling | None = None,
         timeout: float = 60.0,
     ) -> None:
-        self._url = "https://api.brightdata.com/datasets/v3/trigger"
-
-        self._headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        }
-
-        self._params = {
-            "dataset_id": f"{self.dataset_id}",
-        }
-        if include_errors:
-            self._params["include_errors"] = "true"
-        if limit_per_input is not None:
-            self._params["limit_per_input"] = str(limit_per_input)
-
-        self._snapshot_headers = {
-            "Authorization": f"Bearer {api_key}",
-        }
-        self._snapshot_params = {
-            "format": "json",
-        }
-
+        self._api_key = api_key
+        self._include_errors = include_errors
+        self._limit_per_input = limit_per_input
         if polling is None:
             self._polling = Polling()
         else:
             self._polling = polling
-
         self._timeout = timeout
+
+    def _build_params(self) -> dict[str, str]:
+        params: dict[str, str] = {}
+        params["dataset_id"] = f"{self.dataset_id}"
+        if self._include_errors:
+            params["include_errors"] = "true"
+        if self._limit_per_input is not None:
+            params["limit_per_input"] = str(self._limit_per_input)
+        return params
 
     async def scrape(self, queries: list[Q]) -> list[R]:
         snapshot_id = await self.start_scraping(queries)
@@ -59,13 +48,19 @@ class CollectScraper(Generic[Q, R]):
         return results
 
     async def start_scraping(self, queries: list[Q]) -> str:
+        url = "https://api.brightdata.com/datasets/v3/trigger"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self._api_key}",
+        }
+        params = self._build_params()
         data = [query.model_dump(mode="json") for query in queries]
 
         async with httpx.AsyncClient(timeout=httpx.Timeout(self._timeout)) as client:
             response = await client.post(
-                self._url,
-                headers=self._headers,
-                params=self._params,
+                url,
+                headers=headers,
+                params=params,
                 json=data,
             )
             response.raise_for_status()
@@ -75,7 +70,9 @@ class CollectScraper(Generic[Q, R]):
             return snapshot_id
 
     async def wait_for_snapshot_results(self, snapshot_id: str) -> list[R]:
-        snapshot_url = f"https://api.brightdata.com/datasets/v3/snapshot/{snapshot_id}"
+        url = f"https://api.brightdata.com/datasets/v3/snapshot/{snapshot_id}"
+        headers = {"Authorization": f"Bearer {self._api_key}"}
+        params = {"format": "json"}
 
         async with httpx.AsyncClient(timeout=httpx.Timeout(self._timeout)) as client:
             current_interval = self._polling.poll_interval
@@ -83,9 +80,9 @@ class CollectScraper(Generic[Q, R]):
                 await asyncio.sleep(current_interval)
 
                 response = await client.get(
-                    snapshot_url,
-                    headers=self._snapshot_headers,
-                    params=self._snapshot_params,
+                    url,
+                    headers=headers,
+                    params=params,
                 )
                 response.raise_for_status()
                 response_json = response.json()
