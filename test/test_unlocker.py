@@ -1,14 +1,11 @@
-import asyncio
-
-from bdclient.settings import Settings
 from bdclient.unlocker import Unlocker
 
+from .conftest import Settings
 
-async def main() -> None:
+
+async def test_unlocker(settings: Settings) -> None:
     url = "https://www.bbc.com/news/articles/c8ex2l58en4o"
     zone = "web_unlocker1"
-
-    settings = Settings()
 
     unlocker = Unlocker(
         api_key=settings.bright_data_api_key,
@@ -17,7 +14,3 @@ async def main() -> None:
 
     result = await unlocker.unlock(url)
     print(result)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())

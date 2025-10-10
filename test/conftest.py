@@ -1,3 +1,4 @@
+import pytest
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -9,3 +10,8 @@ class Settings(BaseSettings):
     )
 
     bright_data_api_key: str = Field(default=...)
+
+
+@pytest.fixture(scope="session")
+def settings() -> Settings:
+    return Settings()

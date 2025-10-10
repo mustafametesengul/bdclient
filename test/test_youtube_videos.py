@@ -1,13 +1,10 @@
-import asyncio
+from bdclient.scraper.youtube_videos import DiscoverByKeyword, DiscoverByKeywordQuery
 
-from bdclient.scraper.youtube.videos import DiscoverByKeyword, DiscoverByKeywordQuery
-from bdclient.settings import Settings
+from .conftest import Settings
 
 
-async def main() -> None:
+async def test_youtube_videos(settings: Settings) -> None:
     keyword = "Latest News"
-
-    settings = Settings()
 
     query = DiscoverByKeywordQuery(keyword=keyword)
     scraper = DiscoverByKeyword(api_key=settings.bright_data_api_key, limit_per_input=2)
@@ -15,7 +12,3 @@ async def main() -> None:
     results = await scraper.scrape([query])
     for result in results:
         print(result.model_dump_json(indent=4))
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
