@@ -1,6 +1,13 @@
 # BDClient
 
-An unofficial Python client for Bright Data APIs.
+An unofficial type-safe Python client for Bright Data APIs.
+
+Features:
+- Scraper API
+    - Google News
+    - Google SERP
+    - YouTube Videos
+- Unlocker API
 
 ## Installation
 
@@ -9,17 +16,22 @@ Installing using pip:
 pip install bdclient
 ```
 
+Installing using uv:
+```
+uv add bdclient
+```
+
 ## Usage
 
-Example usage:
+Example scraper usage:
 ```python
 import asyncio
 
-from bdclient.scraper.youtube.videos import DiscoverByKeyword, DiscoverByKeywordQuery
+from bdclient.scraper.youtube_videos import DiscoverByKeyword, DiscoverByKeywordQuery
 
 
 async def main():
-    scraper = DiscoverByKeyword(api_key="your_api_key")
+    scraper = DiscoverByKeyword(api_key="your_bright_data_api_key")
     query = DiscoverByKeywordQuery(keyword="Latest News")
 
     results = await scraper.scrape([query])
