@@ -43,13 +43,19 @@ class GoogleSearch:
         self._return_json = return_json
         self._timeout = timeout
 
-    async def search(self, keyword: str, search_type=SearchType.ALL) -> str:
+    async def search(
+        self,
+        keyword: str,
+        search_type: SearchType = SearchType.ALL,
+    ) -> str:
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
         }
 
         params = {"q": keyword}
+        if self._country:
+            params["gl"] = self._country
         if self._language:
             params["hl"] = self._language
         if self._location:
