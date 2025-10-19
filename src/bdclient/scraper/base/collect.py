@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import random
 from typing import Generic, TypeVar
 
@@ -9,6 +10,8 @@ from bdclient.scraper.base.polling import Polling
 
 Q = TypeVar("Q", bound=BaseModel)
 R = TypeVar("R", bound=BaseModel)
+
+logger = logging.getLogger(__name__)
 
 
 class CollectScraper(Generic[Q, R]):
@@ -22,7 +25,7 @@ class CollectScraper(Generic[Q, R]):
         include_errors: bool = True,
         limit_per_input: int | None = None,
         polling: Polling | None = None,
-        timeout: float = 60.0,
+        timeout: float = 30.0,
     ) -> None:
         self._api_key = api_key
         self._include_errors = include_errors
@@ -48,17 +51,17 @@ class CollectScraper(Generic[Q, R]):
         return results
 
     async def start_scraping(self, queries: list[Q]) -> str:
-        url = "https://api.brightdata.com/datasets/v3/trigger"
+        api_url = "https://api.brightdata.com/datasets/v3/trigger"
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self._api_key}",
         }
         params = self._build_params()
-        data = [query.model_dump(mode="json") for query in queries]
+        data = [query.model_dump(mode="json", exclude_none=True) for query in queries]
 
-        async with httpx.AsyncClient(timeout=httpx.Timeout(self._timeout)) as client:
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
             response = await client.post(
-                url,
+                api_url,
                 headers=headers,
                 params=params,
                 json=data,
@@ -70,17 +73,21 @@ class CollectScraper(Generic[Q, R]):
             return snapshot_id
 
     async def wait_for_snapshot_results(self, snapshot_id: str) -> list[R]:
-        url = f"https://api.brightdata.com/datasets/v3/snapshot/{snapshot_id}"
+        api_url = f"https://api.brightdata.com/datasets/v3/snapshot/{snapshot_id}"
         headers = {"Authorization": f"Bearer {self._api_key}"}
         params = {"format": "json"}
 
-        async with httpx.AsyncClient(timeout=httpx.Timeout(self._timeout)) as client:
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
             current_interval = self._polling.poll_interval
             for attempt in range(1, self._polling.max_retries + 1):
+                logger.debug(
+                    f"Polling attempt {attempt} for snapshot {snapshot_id} after "
+                    f"{current_interval:.2f} seconds..."
+                )
                 await asyncio.sleep(current_interval)
 
                 response = await client.get(
-                    url,
+                    api_url,
                     headers=headers,
                     params=params,
                 )

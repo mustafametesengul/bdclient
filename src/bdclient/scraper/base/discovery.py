@@ -19,7 +19,7 @@ class DiscoveryScraper(CollectScraper[Q, R]):
         discovery_only: bool = False,
         limit_per_input: int | None = None,
         polling: Polling | None = None,
-        timeout: float = 60.0,
+        timeout: float = 30.0,
     ) -> None:
         super().__init__(
             api_key=api_key,

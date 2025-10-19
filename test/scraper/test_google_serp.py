@@ -3,7 +3,7 @@ import asyncio
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from bdclient.unlocker import Unlocker
+from bdclient.scraper.google_serp import CollectByURL, CollectByURLQuery
 
 
 class Settings(BaseSettings):
@@ -13,21 +13,17 @@ class Settings(BaseSettings):
     )
 
     bright_data_api_key: str = Field(default=...)
-    unlocker_zone: str = Field(default=...)
 
 
 async def main() -> None:
     settings = Settings()
 
-    url = "https://www.bbc.com/news/articles/c8ex2l58en4o"
+    query = CollectByURLQuery(keyword="AI")
+    scraper = CollectByURL(api_key=settings.bright_data_api_key, limit_per_input=2)
 
-    unlocker = Unlocker(
-        api_key=settings.bright_data_api_key,
-        zone=settings.unlocker_zone,
-    )
-
-    result = await unlocker.unlock(url)
-    print(result)
+    results = await scraper.scrape([query])
+    for result in results:
+        print(result.model_dump_json(indent=4))
 
 
 if __name__ == "__main__":
