@@ -1,6 +1,6 @@
 # Development
 
-Intall dependencies:
+Install dependencies:
 ```bash
 uv sync
 ```

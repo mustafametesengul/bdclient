@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 async def main() -> None:
     settings = Settings()
 
-    keyword = "pizza"
+    keyword = "pizza toppings"
 
     google_search = GoogleSearch(
         api_key=settings.bright_data_api_key,

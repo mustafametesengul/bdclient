@@ -1,4 +1,5 @@
 from enum import StrEnum
+from urllib.parse import urlencode
 
 import httpx
 
@@ -48,19 +49,20 @@ class GoogleSearch:
             "Content-Type": "application/json",
         }
 
-        url = f"https://{self._domain}/search?q={keyword}"
+        params = {"q": keyword}
         if self._language:
-            url += f"&hl={self._language}"
+            params["hl"] = self._language
         if self._location:
-            url += f"&location={self._location}"
+            params["location"] = self._location
         if self._uule:
-            url += f"&uule={self._uule}"
+            params["uule"] = self._uule
         if search_type is not SearchType.ALL:
-            url += f"&tbm={search_type}"
-        url += f"&brd_mobile={self._device}"
+            params["tbm"] = search_type
+        params["brd_mobile"] = self._device
         if self._return_json:
-            url += f"&brd_json=1"
-        url += "&tbm=vid"
+            params["brd_json"] = "1"
+
+        url = f"https://{self._domain}/search?{urlencode(params)}"
 
         payload = {
             "zone": self._zone,
