@@ -63,8 +63,8 @@ class GoogleSearch:
         if self._uule:
             params["uule"] = self._uule
         if search_type is not SearchType.ALL:
-            params["tbm"] = search_type
-        params["brd_mobile"] = self._device
+            params["tbm"] = search_type.value
+        params["brd_mobile"] = self._device.value
         if self._return_json:
             params["brd_json"] = "1"
 
