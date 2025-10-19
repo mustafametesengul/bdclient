@@ -15,19 +15,19 @@ class Organic(BaseModel):
 
 
 class General(BaseModel):
-    search_engine: str | None
-    language: str | None
-    location: str | None
-    search_type: str | None
-    page_title: str | None
-    datetime: dt | None
-    query: str | None
+    search_engine: str | None = None
+    language: str | None = None
+    location: str | None = None
+    search_type: str | None = None
+    page_title: str | None = None
+    datetime: dt | None = None
+    query: str | None = None
 
 
 class Related(BaseModel):
-    rank: int | None
-    link: str | None
-    text: str | None
+    rank: int | None = None
+    link: str | None = None
+    text: str | None = None
 
 
 class Pagination(BaseModel):
@@ -43,18 +43,18 @@ class Result(BaseModel):
     pagination: list[Pagination]
     organic: list[Organic]
     people_also_ask: list[str]
-    language: str | None
-    country: str | None
+    language: str | None = None
+    country: str | None = None
 
 
 class CollectByURLQuery(BaseModel):
     url: str = "https://www.google.com/"
-    keyword: str
-    language: str = "en"
-    country: str = "US"
-    uule: str = ""
-    start_page: int = 1
-    end_page: int = 1
+    keyword: str | None = None
+    language: str | None = None
+    country: str | None = None
+    uule: str | None = None
+    start_page: int | None = None
+    end_page: int | None = None
 
 
 class CollectByURL(CollectScraper[CollectByURLQuery, Result]):

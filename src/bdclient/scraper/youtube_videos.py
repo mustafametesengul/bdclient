@@ -7,25 +7,29 @@ from bdclient.scraper.base import DiscoveryScraper
 DATASET_ID = "gd_lk56epmy2i5g7lzu0k"
 
 
+class Result(BaseModel):
+    url: str
+    title: str
+    youtuber: str | None = None
+    youtuber_md5: str | None = None
+    video_url: str | None = None
+    video_length: float
+    likes: int | None = None
+    views: int | None = None
+    date_posted: datetime
+    description: str | None = None
+    num_comments: int | None = None
+    subscribers: int | None = None
+    video_id: str
+    channel_url: str
+
+
 class DiscoverByKeywordQuery(BaseModel):
     keyword: str
     num_of_posts: int | None = None
     start_date: datetime | None = None
     end_date: datetime | None = None
     country: str | None = None
-
-
-class Result(BaseModel):
-    url: str
-    title: str
-    youtuber: str
-    youtuber_md5: str
-    video_url: str
-    video_length: float
-    likes: int
-    views: int
-    date_posted: datetime
-    description: str
 
 
 class DiscoverByKeyword(DiscoveryScraper[DiscoverByKeywordQuery, Result]):

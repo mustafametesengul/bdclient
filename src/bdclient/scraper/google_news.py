@@ -9,20 +9,20 @@ DATASET_ID = "gd_lnsxoxzi1omrwnka5r"
 
 class Result(BaseModel):
     url: str
-    title: str | None
+    title: str | None = None
     publisher: str
     date: datetime
-    category: str | None
+    category: str | None = None
     keyword: str
-    country: str | None
-    image: str | None
+    country: str | None = None
+    image: str | None = None
 
 
 class CollectByURLQuery(BaseModel):
     url: str = "https://news.google.com/"
     keyword: str
-    country: str = "US"
-    language: str = "en"
+    country: str | None = None
+    language: str | None = None
 
 
 class CollectByURL(CollectScraper[CollectByURLQuery, Result]):

@@ -1,9 +1,10 @@
 import asyncio
+import json
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from bdclient.unlocker import Unlocker
+from bdclient.serp.google_search import GoogleSearch
 
 
 class Settings(BaseSettings):
@@ -13,21 +14,21 @@ class Settings(BaseSettings):
     )
 
     bright_data_api_key: str = Field(default=...)
-    unlocker_zone: str = Field(default=...)
+    serp_zone: str = Field(default=...)
 
 
 async def main() -> None:
     settings = Settings()
 
-    url = "https://www.bbc.com/news/articles/c8ex2l58en4o"
+    keyword = "pizza"
 
-    unlocker = Unlocker(
+    google_search = GoogleSearch(
         api_key=settings.bright_data_api_key,
-        zone=settings.unlocker_zone,
+        zone=settings.serp_zone,
     )
+    result = await google_search.search(keyword)
 
-    result = await unlocker.unlock(url)
-    print(result)
+    print(json.dumps(json.loads(result), indent=4))
 
 
 if __name__ == "__main__":
