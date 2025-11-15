@@ -3,22 +3,25 @@
 An unofficial Python client for Bright Data APIs.
 
 Features:
+
 - Scraper API
-    - Google News
-    - Google SERP
-    - YouTube Videos
+  - Google News
+  - Google SERP
+  - YouTube Videos
 - SERP API
-    - Google Search
+  - Google Search
 - Unlocker API
 
 ## Installation
 
 Installing using pip:
+
 ```bash
 pip install bdclient
 ```
 
 Installing using uv:
+
 ```bash
 uv add bdclient
 ```
@@ -26,6 +29,7 @@ uv add bdclient
 ## Usage
 
 Example Scraper API usage:
+
 ```python
 import asyncio
 
@@ -46,6 +50,7 @@ if __name__ == "__main__":
 ```
 
 Example SERP API usage:
+
 ```python
 import asyncio
 
@@ -66,6 +71,7 @@ if __name__ == "__main__":
 ```
 
 Example Unlocker API usage:
+
 ```python
 import asyncio
 
